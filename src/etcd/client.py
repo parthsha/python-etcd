@@ -14,6 +14,7 @@ except ImportError:
     # Python 2
     from httplib import HTTPException
 import socket
+import urllib
 import urllib3
 from urllib3.exceptions import HTTPError
 from urllib3.exceptions import ReadTimeoutError
@@ -429,7 +430,13 @@ class Client(object):
     def _sanitize_key(self, key):
         if not key.startswith('/'):
             key = "/{}".format(key)
-        return key
+        output_key = ''
+        for subkey in key.split('/'):
+            if not subkey:
+                continue
+            output_key += '/'
+            output_key += urllib.quote(subkey, safe='')
+        return output_key
 
     def write(self, key, value, ttl=None, dir=False, append=False, **kwdargs):
         """
